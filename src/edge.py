@@ -4,7 +4,9 @@ import cv2 as cv
 from os import path
 from tqdm import trange
 
-IMAGE_FILE_NAME = "circle.png"
+IMAGE_FILE_NAME     = "regions.png"
+PRE_GAUSSIAN_SIZE   = (5, 5)
+POST_GAUSSIAN_SIZE  = (1, 1)
 
 if __name__ == "__main__":
     # Sobel filters
@@ -16,7 +18,7 @@ if __name__ == "__main__":
                         [-1, -2, -1]], dtype=np.float32)
     
     image = cv.imread(path.join("resources", IMAGE_FILE_NAME))
-    image = cv.GaussianBlur(image, (11, 11), 0)
+    image = cv.GaussianBlur(image, PRE_GAUSSIAN_SIZE, 0)
     image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
     edges_x         = cv.filter2D(src=image, ddepth=3, kernel=filterx)
@@ -45,4 +47,5 @@ if __name__ == "__main__":
                 out[i][j][1] = 128 + 127.0*y/magn
                 out[i][j][2] = 128 + 127.0*x/magn
             
+    out = cv.GaussianBlur(out, POST_GAUSSIAN_SIZE, 0)
     cv.imwrite(path.join("outputs", "detected-edges.png"), out)
