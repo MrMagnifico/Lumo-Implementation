@@ -94,13 +94,15 @@ void unitizeRGB(Image<glm::vec3>& values, bool inputNormalised = false) {
  * @param unknown_value Pixels having this RGB value are the unknown pixels whose values will be obtained via interpolation; all others are ignored
  * @param normaliseIntermediate Normalise the intermediate data (i.e divide RGB values by 255)
  * @param unitizeOutput Ensure that the output vectors represented by each pixel are unit length (or 255 in case of no normalisation)
+ * @param saveIntermediate Save intermediate interpolation results and velocities as PNG files in the output directory
  * 
  * @return Image with pixels having unknown_value interpolated from known pixels
 */
 Image<glm::uvec3> iterativeInterpolation(const Image<glm::uvec3>& values,
                                          const glm::uvec3 unknown_value = {255U, 255U, 255U},
                                          const bool normaliseIntermediate = false,
-                                         const bool unitizeOutput = false) {
+                                         const bool unitizeOutput = false,
+                                         const bool saveIntermediate = false) {
     Image<bool> toInterp                = flagValue(values, unknown_value);
     Image<glm::vec3> interpolatedArray  = toFloat(values, normaliseIntermediate);
     Image<glm::vec3> velocities(values.width, values.height);
@@ -140,6 +142,13 @@ Image<glm::uvec3> iterativeInterpolation(const Image<glm::uvec3>& values,
             }
         }
         bar.update();
+
+        if (saveIntermediate) { 
+            const std::filesystem::path velocityPath    = out_dir_path / "velocities_interm" / (std::to_string(iteration) + ".png");
+            const std::filesystem::path fieldPath       = out_dir_path / "fields_interm" / (std::to_string(iteration) + ".png");
+            velocities.writeToFile(velocityPath); // Looks weird if not converted to uint first
+            toUint(interpolatedArray, normaliseIntermediate).writeToFile(fieldPath); // This one is fine though for some reason
+        }
     }
 
     if (unitizeOutput) { unitizeRGB(interpolatedArray, normaliseIntermediate); }
@@ -149,7 +158,7 @@ Image<glm::uvec3> iterativeInterpolation(const Image<glm::uvec3>& values,
 int main(int argc, char* argv[]) {
     const std::string fileName      = "detected-edges.png";
     Image<glm::uvec3> input         = Image<glm::uvec3>(resources_dir_path / fileName);
-    Image<glm::uvec3> output        = iterativeInterpolation(input, glm::vec3(0U), false, true);
+    Image<glm::uvec3> output        = iterativeInterpolation(input, glm::vec3(0U), false, true, false);
     output.writeToFile(out_dir_path / "result.png");
 
     return EXIT_SUCCESS;
