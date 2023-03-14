@@ -12,8 +12,8 @@ image = cv.imread("out2.png")
 image = cv.GaussianBlur(image,(5,5),0)
 image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
-edgesx = cv.filter2D(src=image, ddepth = 3, kernel=filterx)
-edgesy = cv.filter2D(src=image, ddepth = 3, kernel=filtery)
+edgesx = cv.filter2D(src=image, ddepth = 3, kernel=filterx*-1)
+edgesy = cv.filter2D(src=image, ddepth = 3, kernel=filtery*-1)
 rows,cols = edgesx.shape
 out = np.arange((rows)*(cols)*3).reshape((rows),(cols), 3).astype(np.uint8)
 out2 = np.arange((rows)*(cols)*2).reshape((rows),(cols), 2).astype(np.float32)
@@ -36,10 +36,10 @@ for i in range(rows):
             # ENJOY :)
             print(123 + 122.0*x/magn, 123 + 122.0*y/magn, x, y)
             out[i][j][0] = 0
-            out[i][j][1] = 123 + 122.0*x/magn
-            out[i][j][2] = 123 + 122.0*y/magn
-            out2[i][j][0] = x/magn
-            out2[i][j][1] = y/magn
+            out[i][j][1] = 123 + 122.0*y/magn
+            out[i][j][2] = 123 + 122.0*x/magn
+            out2[i][j][0] = y/magn
+            out2[i][j][1] = x/magn
         
 
 cv.imwrite('edgesb.png', out)
