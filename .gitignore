@@ -197,3 +197,7 @@ pyrightconfig.json
 # Blobs
 /resources
 /outputs
+
+# CLion
+/.idea
+/cmake-build-*
