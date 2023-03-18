@@ -126,7 +126,6 @@ Image<glm::uvec3> iterativeInterpolation(const Image<glm::uvec3> &values,
     Image<glm::vec3> interpolatedArray = toFloat(values, normaliseIntermediate);
     Image<glm::vec3> velocities(values.width, values.height);
 
-    std::cout << "Interpolating..." << std::endl;
     progressbar bar(ITER_LIMIT);
     uint32_t iteration = 0U;
     while (iteration++ < ITER_LIMIT)
@@ -184,13 +183,22 @@ Image<glm::uvec3> iterativeInterpolation(const Image<glm::uvec3> &values,
     return toUint(interpolatedArray, normaliseIntermediate);
 }
 
+// 1: file path
+// 2: file name
+// 3 4 5: R G B
+
 int main(int argc, char *argv[])
 {
-    const std::string fileName = "regions-edges.png";
-    Image<glm::uvec3> input = Image<glm::uvec3>(out_dir_path / fileName);
-    Image<glm::uvec3> output = iterativeInterpolation(input, glm::vec3(0U, 0U, 0U),
+    std::vector<std::string> args(argv, argv + argc);
+
+    Image<glm::uvec3> input = Image<glm::uvec3>(std::filesystem::path(args[1]) / (args[2] + ".png"));
+
+    std::cout << "Interpolating " << args[2] << ":" << std::endl;
+    Image<glm::uvec3> output = iterativeInterpolation(input, glm::vec3(std::stoi(args[3]), std::stoi(args[4]), std::stoi(args[5])),
                                                       false, true, false);
-    output.writeToFile(out_dir_path / "regions-edges-interp.png");
+    std::cout << std::endl;
+
+    output.writeToFile(out_dir_path / (args[2] + "-interp.png"));
 
     return EXIT_SUCCESS;
 }

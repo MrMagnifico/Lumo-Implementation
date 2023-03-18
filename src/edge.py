@@ -1,10 +1,13 @@
 import math
+import sys
 import numpy as np
 import cv2 as cv
 from os import path
 from tqdm import trange
 
-IMAGE_FILE_NAME     = "cat-regions2.png"
+IMAGE_FILE_FOLDER = sys.argv[1]
+IMAGE_FILE_NAME     = sys.argv[2]
+
 PRE_GAUSSIAN_SIZE   = (5, 5)
 POST_GAUSSIAN_SIZE  = (1, 1)
 
@@ -17,7 +20,7 @@ if __name__ == "__main__":
                         [0, 0, 0], 
                         [-1, -2, -1]], dtype=np.float32)
 
-    image = cv.imread(path.join("resources", IMAGE_FILE_NAME))
+    image = cv.imread(path.join(IMAGE_FILE_FOLDER, IMAGE_FILE_NAME + ".png"))
     image = cv.GaussianBlur(image, PRE_GAUSSIAN_SIZE, 0)
     image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
@@ -26,7 +29,7 @@ if __name__ == "__main__":
     rows, cols      = edges_x.shape
     out             = np.arange(rows * cols * 3).reshape(rows, cols, 3).astype(np.uint8)
 
-    for i in trange(rows, desc="Processing rows"):
+    for i in trange(rows, desc=f"Determining edges {IMAGE_FILE_NAME}"):
         for j in range(cols):
             x = edges_x[i, j]
             if -50 < x < 50:
@@ -48,4 +51,4 @@ if __name__ == "__main__":
                 out[i][j][2] = 128 + 127.0*x/magn
             
     out = cv.GaussianBlur(out, POST_GAUSSIAN_SIZE, 0)
-    cv.imwrite(path.join("outputs", "regions-edges.png"), out)
+    cv.imwrite(path.join("outputs", IMAGE_FILE_NAME + "-edges.png"), out)
