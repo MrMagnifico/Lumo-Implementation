@@ -14,7 +14,6 @@ CONFIDENCE_FILE_NAME   = sys.argv[6]
 IMAGE_FILE_NAME = sys.argv[7]
 
 PRE_GAUSSIAN_SIZE   = (5, 5)
-POST_GAUSSIAN_SIZE  = (1, 1)
 
 # Blue: use outline/regions
 
@@ -40,5 +39,4 @@ if __name__ == "__main__":
 
                 out[i][j][k] = outline_part + edges_part
 
-    out = cv.GaussianBlur(out, POST_GAUSSIAN_SIZE, 0)
     cv.imwrite(path.join("outputs", IMAGE_FILE_NAME + ".png"), out)

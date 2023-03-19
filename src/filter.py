@@ -35,4 +35,7 @@ if __name__ == "__main__":
                     out[i][j][k] = image.item(i, j, k)
 
     out = cv.GaussianBlur(out, POST_GAUSSIAN_SIZE, 0)
-    cv.imwrite(path.join("outputs", IMAGE_FILE_NAME + "-filtered.png"), out)
+    out_folder = "outputs"
+    if len(sys.argv) > 5:
+        out_folder = path.join(out_folder, sys.argv[5])
+    cv.imwrite(path.join(out_folder, IMAGE_FILE_NAME + "-filtered.png"), out)

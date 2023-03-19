@@ -31,4 +31,7 @@ if __name__ == "__main__":
                 image.itemset((i, j, 2), 0)
 
     image = cv.GaussianBlur(image, POST_GAUSSIAN_SIZE, 0)
-    cv.imwrite(path.join("outputs", IMAGE_FILE_NAME + "-outline.png"), image)
+    out_folder = "outputs"
+    if len(sys.argv) > 3:
+        out_folder = path.join(out_folder, sys.argv[3])
+    cv.imwrite(path.join(out_folder, IMAGE_FILE_NAME + "-outline.png"), image)

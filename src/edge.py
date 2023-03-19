@@ -53,4 +53,7 @@ if __name__ == "__main__":
                 out[i][j][2] = 128 + 127.0*x/magn
             
     out = cv.GaussianBlur(out, POST_GAUSSIAN_SIZE, 0)
-    cv.imwrite(path.join("outputs", IMAGE_FILE_NAME + "-edges.png"), out)
+    out_folder = "outputs"
+    if len(sys.argv) > 3:
+        out_folder = path.join(out_folder, sys.argv[3])
+    cv.imwrite(path.join(out_folder, IMAGE_FILE_NAME + "-edges.png"), out)

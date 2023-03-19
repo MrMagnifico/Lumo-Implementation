@@ -186,6 +186,7 @@ Image<glm::uvec3> iterativeInterpolation(const Image<glm::uvec3> &values,
 // 1: file path
 // 2: file name
 // 3 4 5: R G B
+// 6: optional extra path
 
 int main(int argc, char *argv[])
 {
@@ -198,7 +199,14 @@ int main(int argc, char *argv[])
                                                       false, true, false);
     std::cout << std::endl;
 
-    output.writeToFile(out_dir_path / (args[2] + "-interp.png"));
+    std::filesystem::path outPath = out_dir_path;
+
+    if (argc > 5)
+    {
+        outPath /= args[6];
+    }
+
+    output.writeToFile(outPath / (args[2] + "-interp.png"));
 
     return EXIT_SUCCESS;
 }
