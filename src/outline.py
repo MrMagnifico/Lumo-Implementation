@@ -9,7 +9,9 @@ IMAGE_FILE_FOLDER = sys.argv[1]
 IMAGE_FILE_NAME     = sys.argv[2]
 PRE_GAUSSIAN_SIZE   = (5, 5)
 POST_GAUSSIAN_SIZE  = (1, 1)
-THRESHOLD = 230
+
+# over is out of image
+THRESHOLD = 220
 
 if __name__ == "__main__":
     
@@ -19,11 +21,14 @@ if __name__ == "__main__":
     for i in trange(image.shape[0], desc=f"Outlining {IMAGE_FILE_NAME}"):
         for j in range(image.shape[1]):
             
-            if image.item(i, j, 0) < THRESHOLD:
+            if image.item(i, j, 0) > THRESHOLD:
+                image.itemset((i, j, 0), 255)
+                image.itemset((i, j, 1), 255)
+                image.itemset((i, j, 2), 255)
+            else:
                 image.itemset((i, j, 0), 0)
                 image.itemset((i, j, 1), 0)
                 image.itemset((i, j, 2), 0)
-            
 
     image = cv.GaussianBlur(image, POST_GAUSSIAN_SIZE, 0)
     cv.imwrite(path.join("outputs", IMAGE_FILE_NAME + "-outline.png"), image)

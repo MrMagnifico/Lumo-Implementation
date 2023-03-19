@@ -11,6 +11,8 @@ IMAGE_FILE_NAME     = sys.argv[2]
 PRE_GAUSSIAN_SIZE   = (5, 5)
 POST_GAUSSIAN_SIZE  = (1, 1)
 
+THRESHOLD = 15
+
 if __name__ == "__main__":
     # Sobel filters
     filterx = np.array([[-1, 0, 1], 
@@ -32,10 +34,10 @@ if __name__ == "__main__":
     for i in trange(rows, desc=f"Determining edges {IMAGE_FILE_NAME}"):
         for j in range(cols):
             x = edges_x[i, j]
-            if -50 < x < 50:
+            if -THRESHOLD < x < THRESHOLD:
                 x = 0
             y = edges_y[i, j]
-            if -50 < y < 50:
+            if -THRESHOLD < y < THRESHOLD:
                 y = 0
             magn = math.sqrt(x**2 + y**2)
             if magn == 0:
