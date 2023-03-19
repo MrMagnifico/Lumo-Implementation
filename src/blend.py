@@ -39,4 +39,7 @@ if __name__ == "__main__":
 
                 out[i][j][k] = outline_part + edges_part
 
-    cv.imwrite(path.join("outputs", IMAGE_FILE_NAME + ".png"), out)
+    out_folder = "outputs"
+    if len(sys.argv) > 8:
+        out_folder = path.join(out_folder, sys.argv[8])
+    cv.imwrite(path.join(out_folder, IMAGE_FILE_NAME + ".png"), out)
