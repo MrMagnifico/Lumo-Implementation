@@ -199,16 +199,10 @@ int main(int argc, char *argv[])
                                                       false, true, false);
     std::cout << std::endl;
 
-    std::filesystem::path outPath;
+    std::filesystem::path outPath = out_dir_path;
 
-    if (argc == 6)
-    {
-        outPath = out_dir_path;
-    }
-    else
-    {
+    if (argc > 6)
         outPath = out_dir_path / args[6];
-    }
 
     output.writeToFile(outPath / (args[2] + "-interp.png"));
 
