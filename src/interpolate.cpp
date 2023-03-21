@@ -28,10 +28,7 @@ Image<glm::uvec3> toUint(const Image<glm::vec3> &values, bool denormalise = fals
         for (int32_t x = 0; x < values.width; x++)
         {
             glm::vec3 pixel = values.safeAccess(x, y, NEAREST);
-            if (denormalise)
-            {
-                pixel *= MAX_PIXEL_VALUE;
-            }
+            if (denormalise) { pixel = (pixel * 122.5f) + 122.5f; }
             uintValues.data[uintValues.getImageOffset(x, y)] = glm::uvec3(pixel.x, pixel.y, pixel.z);
         }
     }
@@ -41,18 +38,15 @@ Image<glm::uvec3> toUint(const Image<glm::vec3> &values, bool denormalise = fals
 Image<glm::vec3> toFloat(const Image<glm::uvec3> &values, bool normalise = false)
 {
     Image<glm::vec3> floatValues = Image<glm::vec3>(values.width, values.height);
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int32_t y = 0; y < values.height; y++)
     {
-#pragma omp parallel for
+    #pragma omp parallel for
         for (int32_t x = 0; x < values.width; x++)
         {
             const glm::uvec3 &pixel = values.safeAccess(x, y, NEAREST);
             glm::vec3 pixelFloat(pixel.x, pixel.y, pixel.z);
-            if (normalise)
-            {
-                pixelFloat /= MAX_PIXEL_VALUE;
-            }
+            if (normalise) { pixelFloat = (pixelFloat - 122.5f) / 122.5f; }
             floatValues.data[floatValues.getImageOffset(x, y)] = pixelFloat;
         }
     }
@@ -186,7 +180,8 @@ Image<glm::uvec3> iterativeInterpolation(const Image<glm::uvec3> &values,
 // 1: file path
 // 2: file name
 // 3 4 5: R G B
-// 6: optional extra path
+// 6: normalise intermediate (0 or 1)
+// 7: optional extra path
 
 int main(int argc, char *argv[])
 {
@@ -196,13 +191,13 @@ int main(int argc, char *argv[])
 
     std::cout << "Interpolating " << args[2] << ":" << std::endl;
     Image<glm::uvec3> output = iterativeInterpolation(input, glm::vec3(std::stoi(args[3]), std::stoi(args[4]), std::stoi(args[5])),
-                                                      false, true, false);
+                                                      std::stoi(args[6]), true, false);
     std::cout << std::endl;
 
     std::filesystem::path outPath = out_dir_path;
 
-    if (argc > 6)
-        outPath = out_dir_path / args[6];
+    if (argc > 7)
+        outPath = out_dir_path / args[7];
 
     output.writeToFile(outPath / (args[2] + "-interp.png"));
 

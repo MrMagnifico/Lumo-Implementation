@@ -5,7 +5,7 @@ set interp-exe="build/Release/paper-impl.exe"
 
 @REM 1: outline
 @REM 2: regions
-set mode=1
+set mode=2
 
 @REM create outline
 %py-exe% src/outline.py resources cat-regions2
@@ -16,7 +16,7 @@ if %mode% == 1 (
     %py-exe% src/edge.py outputs cat-regions2-outline
 
     @REM interpolate
-    %interp-exe% outputs cat-regions2-outline-edges 0 0 0
+    %interp-exe% outputs cat-regions2-outline-edges 0 0 0 1
 ) else (
     @REM region-based normals
     %py-exe% src/region-norms.py resources cat-regions2
@@ -28,11 +28,11 @@ if %mode% == 1 (
     %py-exe% src/edge.py resources cat-lines2
     
     @REM interpolate edges
-    %interp-exe% outputs cat-lines2-edges 0 0 0
+    %interp-exe% outputs cat-lines2-edges 0 0 0 1
 )
 
 @REM CONFIDENCE MATTE
-%interp-exe% resources cat-over-under2 255 0 0
+%interp-exe% resources cat-over-under2 255 0 0 0
 
 @REM blend everyting together
 if %mode% == 1 (
