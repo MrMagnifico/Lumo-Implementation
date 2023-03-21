@@ -28,7 +28,7 @@ Image<glm::uvec3> toUint(const Image<glm::vec3> &values, bool denormalise = fals
         for (int32_t x = 0; x < values.width; x++)
         {
             glm::vec3 pixel = values.safeAccess(x, y, NEAREST);
-            if (denormalise) { pixel = (pixel * 122.5f) + 122.5f; }
+            if (denormalise) { pixel = (pixel * 127.5f) + 127.5f; }
             uintValues.data[uintValues.getImageOffset(x, y)] = glm::uvec3(pixel.x, pixel.y, pixel.z);
         }
     }
@@ -46,7 +46,7 @@ Image<glm::vec3> toFloat(const Image<glm::uvec3> &values, bool normalise = false
         {
             const glm::uvec3 &pixel = values.safeAccess(x, y, NEAREST);
             glm::vec3 pixelFloat(pixel.x, pixel.y, pixel.z);
-            if (normalise) { pixelFloat = (pixelFloat - 122.5f) / 122.5f; }
+            if (normalise) { pixelFloat = (pixelFloat - 127.5f) / 127.5f; }
             floatValues.data[floatValues.getImageOffset(x, y)] = pixelFloat;
         }
     }
@@ -165,8 +165,8 @@ Image<glm::uvec3> iterativeInterpolation(const Image<glm::uvec3> &values,
         {
             const std::filesystem::path velocityPath = out_dir_path / "velocities_interm" / (std::to_string(iteration) + ".png");
             const std::filesystem::path fieldPath = out_dir_path / "fields_interm" / (std::to_string(iteration) + ".png");
-            velocities.writeToFile(velocityPath);                                    // Looks weird if not converted to uint first
-            toUint(interpolatedArray, normaliseIntermediate).writeToFile(fieldPath); // This one is fine though for some reason
+            toUint(interpolatedArray, normaliseIntermediate).writeToFile(fieldPath); // Looks weird if not converted to uint first
+            velocities.writeToFile(velocityPath);                                    // This one is fine though for some reason
         }
     }
 
@@ -182,16 +182,16 @@ Image<glm::uvec3> iterativeInterpolation(const Image<glm::uvec3> &values,
 // 3 4 5: R G B
 // 6: normalise intermediate (0 or 1)
 // 7: optional extra path
-
 int main(int argc, char *argv[])
 {
     std::vector<std::string> args(argv, argv + argc);
 
-    Image<glm::uvec3> input = Image<glm::uvec3>(std::filesystem::path(args[1]) / (args[2] + ".png"));
+    Image<glm::uvec3> input     = Image<glm::uvec3>(std::filesystem::path(args[1]) / (args[2] + ".png"));
+    bool normaliseIntermediate  = argc > 6 ? std::stoi(args[6]) : false;
 
     std::cout << "Interpolating " << args[2] << ":" << std::endl;
     Image<glm::uvec3> output = iterativeInterpolation(input, glm::vec3(std::stoi(args[3]), std::stoi(args[4]), std::stoi(args[5])),
-                                                      std::stoi(args[6]), true, false);
+                                                      normaliseIntermediate, true, false);
     std::cout << std::endl;
 
     std::filesystem::path outPath = out_dir_path;

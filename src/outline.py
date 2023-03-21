@@ -1,6 +1,4 @@
-import math
 import sys
-import numpy as np
 import cv2 as cv
 from os import path
 from tqdm import trange

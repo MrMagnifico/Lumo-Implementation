@@ -126,7 +126,7 @@ if __name__ == "__main__":
         
         cv.imwrite((path.join(folder, str(color) + ".png")), regions[color])
         subprocess.run(["venv/Scripts/python.exe", "src/edge.py", folder, str(color), IMAGE_FILE_NAME + "-parts"])
-        subprocess.run(["build/Release/paper-impl.exe", folder, str(color) + "-edges", "0", "0", "0", IMAGE_FILE_NAME + "-parts"], stdout=sys.stdout)
+        subprocess.run(["build/Release/paper-impl.exe", folder, str(color) + "-edges", "0", "0", "0", "0", IMAGE_FILE_NAME + "-parts"], stdout=sys.stdout)
 
         filter = regions[color]
         region = cv.imread(path.join(folder, str(color) + "-edges-interp.png"))
