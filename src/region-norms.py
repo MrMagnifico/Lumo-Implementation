@@ -37,7 +37,7 @@ if __name__ == "__main__":
             amounts[image.item(i, j, 0)] += 1
             regions_as_list[image.item(i, j, 0)].append((i, j))
 
-    print("Filtering regions")
+    print(f"Filtering regions of {IMAGE_FILE_NAME}")
     for color in range(256):
         region = regions[color]
         region_as_list = regions_as_list[color]
@@ -61,7 +61,7 @@ if __name__ == "__main__":
         if amounts[color] > min_amount and (color % 10 == 0 or color == 255):
             selected_colors.append(color)
 
-    print("Joining selected color regions")
+    print(f"Joining selected color regions of {IMAGE_FILE_NAME}")
     sharp = np.full((rows, cols, 3), UNSELECTED_COLOR, dtype=np.uint8)
     for selected_color in selected_colors:
         # cv.imwrite((path.join(folder, str(selected_color) + ".png")), regions[selected_color])
@@ -80,7 +80,7 @@ if __name__ == "__main__":
             if sharp[i][j][0] == UNSELECTED_COLOR:
                 pixels_to_fill.append((i, j))
 
-    print("Filling empty space, iteration", end=" ", flush=True)
+    print(f"Filling empty space of {IMAGE_FILE_NAME}, iteration", end=" ", flush=True)
     count = 0
     while len(pixels_to_fill) > 0:
         
@@ -108,7 +108,7 @@ if __name__ == "__main__":
         for filled_pixel in filled_pixels:
             pixels_to_fill.remove(filled_pixel)
 
-    print("done")
+    print("done", flush=True)
 
     cv.imwrite(path.join(folder, IMAGE_FILE_NAME + "-sharp.png"), sharp)
 
@@ -116,7 +116,14 @@ if __name__ == "__main__":
 
     selected_colors.remove(255)
 
-    for color in tqdm(selected_colors, desc=f"Adding to result"):
+    for color in selected_colors:
+        for c in selected_colors:
+            if c == color:
+                print(f" ->{c}<- ", end="", flush=True)
+            else:
+                print(f" {c} ", end="", flush=True)
+        print(flush=True)
+        
         cv.imwrite((path.join(folder, str(color) + ".png")), regions[color])
         subprocess.run(["venv/Scripts/python.exe", "src/edge.py", folder, str(color), IMAGE_FILE_NAME + "-parts"])
         subprocess.run(["build/Release/paper-impl.exe", folder, str(color) + "-edges", "0", "0", "0", IMAGE_FILE_NAME + "-parts"], stdout=sys.stdout)

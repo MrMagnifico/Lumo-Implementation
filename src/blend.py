@@ -13,8 +13,6 @@ CONFIDENCE_FILE_FOLDER = sys.argv[5]
 CONFIDENCE_FILE_NAME   = sys.argv[6]
 IMAGE_FILE_NAME = sys.argv[7]
 
-PRE_GAUSSIAN_SIZE   = (5, 5)
-
 # Blue: use outline/regions
 
 if __name__ == "__main__":
@@ -34,10 +32,10 @@ if __name__ == "__main__":
             key = confidence.item(i, j, 0) / 255
 
             for k in range(3):
-                outline_part = blob.item(i, j, k) * key
-                edges_part = lines.item(i, j, k) * (1 - key)
+                blob_part = blob.item(i, j, k) * (1 - key)
+                edges_part = lines.item(i, j, k) * (key)
 
-                out[i][j][k] = outline_part + edges_part
+                out[i][j][k] = blob_part + edges_part
 
     out_folder = "outputs"
     if len(sys.argv) > 8:
